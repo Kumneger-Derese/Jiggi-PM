@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+
+body, html {
+    @apply bg-neutral-900 text-neutral-100;
+}
+
+::-webkit-scrollbar{
+    width: 4px;
+}
+::-webkit-scrollbar:horizontal{
+    height: 6px;
+}
+::-webkit-scrollbar:vertical{
+    width: 6px;
+}
+::-webkit-scrollbar-thumb:vertical{
+    @apply bg-neutral-700 rounded-md;
+}
+::-webkit-scrollbar-thumb{
+    @apply bg-sky-600 rounded-md;
+}
