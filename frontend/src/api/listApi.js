@@ -31,7 +31,8 @@ const deleteList = async (listId) => {
 
 //reorder list
 const reorderList = async (payload) => {
-    const {data} = await Axios.put(`/lists/reorder-list/${payload.projectId}`, payload.body);
+    const {projectId, body} = payload
+    const {data} = await Axios.put(`/lists/reorder-list/${projectId}`, body);
     return data
 }
 

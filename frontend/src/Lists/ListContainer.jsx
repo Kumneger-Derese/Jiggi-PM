@@ -2,26 +2,21 @@ import {HiOutlineTrash} from "react-icons/hi2";
 import {SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {TbEdit} from "react-icons/tb";
-import {useGetCards, useMoveCard, useReorderCard} from "../hooks/useCardApi.js";
+import {useGetCards} from "../hooks/useCardApi.js";
 import {useMemo, useState} from "react";
 import Card from "../Card/Card.jsx";
 import EmptyCard from "../Card/EmptyCard.jsx";
 import CreateCardModal from "../Card/CreateCardModal.jsx";
 import UpdateCardModal from "../Card/UpdateCardModal.jsx";
 import DeleteCardModal from "../Card/DeleteCardModal.jsx";
-import {DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors} from "@dnd-kit/core";
-import {createPortal} from "react-dom";
 
 const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSelectedList}) => {
     const [selectedCard, setSelectedCard] = useState(null);
-    const [activeCard, setActiveCard] = useState(null);
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isUpdateCardModalOpen, setIsUpdateCardModalOpen] = useState(false);
     const [isDeleteCardModalOpen, setIsDeleteCardModalOpen] = useState(false);
 
-    const moveCardMutation = useMoveCard()
-    const reorderCardMutation = useReorderCard()
     const {data: cards, isLoading, isError, error} = useGetCards(list?.id)
     const cardIds = useMemo(() => cards?.map(card => card.id), [cards])
 
@@ -45,49 +40,6 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
         transition,
     }
 
-    const onDragStart = (event) => {
-        if (event.active.data.current?.type === 'Card') {
-            setActiveCard(event.active.data.current.card)
-        }
-    }
-
-    const onDragOver = (event) => {
-        const {active, over} = event
-        if (!over) return
-
-        const activeId = active.id
-        const overId = over.id
-
-        if (activeId === overId) return;
-
-        const isActiveCard = active.data.current?.type === 'Card';
-        const isOverCard = over.data.current?.type === 'Card';
-
-        if (!isActiveCard) return;
-
-        if (isActiveCard && isOverCard) {
-            // reordering bn the same list
-            reorderCardMutation.mutate({activeCardId: activeId, overCardId: overId, listId: list.id})
-        }
-
-        // reordering across lists
-        const isOverList = over.data.current?.type === 'List';
-        console.log({isOverList})
-
-        if (isActiveCard && isOverList) {
-            const newListId = over.data.current?.card?.listId
-            moveCardMutation.mutate({activeId, overId, newListId})
-        }
-    }
-
-    const sensors = useSensors(
-        useSensor(PointerSensor, {
-            activationConstraint: {
-                distance: 3
-            }
-        }),
-        useSensor(KeyboardSensor)
-    )
 
     if (isDragging) {
         return (
@@ -160,7 +112,6 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
             </div>
 
             {/*list tasks*/}
-            <DndContext sensors={sensors} onDragStart={onDragStart} onDragOver={onDragOver}>
                 <div className={'flex flex-col flex-1 p-2 overflow-x-hidden overflow-y-auto'}>
                     {cards?.length === 0 && <EmptyCard/>}
                     <SortableContext items={cardIds}>
@@ -175,20 +126,6 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
                         ))}
                     </SortableContext>
                 </div>
-
-                {createPortal(
-                    <DragOverlay>
-                        {activeCard ?
-                            <Card
-                                card={activeCard}
-                                setSelectedCard={setSelectedCard}
-                                setIsDeleteCardModalOpen={setIsDeleteCardModalOpen}
-                                setIsUpdateCardModalOpen={setIsUpdateCardModalOpen}
-                            /> : null}
-                    </DragOverlay>,
-                    document.body
-                )}
-            </DndContext>
 
             {/*add task button*/}
             <button onClick={() => setIsCreateModalOpen(true)}

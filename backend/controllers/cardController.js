@@ -36,8 +36,11 @@ const reorderCard = asyncHandler(async (req, res, next) => {
         return next('activeCardId and overCardId is required');
     }
 
-    const activeCard = await Card.findByPk(activeCardId);
-    const overCard = await Card.findByPk(overCardId);
+    // Use Promise.all to fetch both cards concurrently
+    const [activeCard, overCard] = await Promise.all([
+        Card.findByPk(activeCardId),
+        Card.findByPk(overCardId)
+    ]);
 
     if (!overCard || !activeCard) {
         return next(new ApiError('Over or Active card not found', 404));
@@ -81,18 +84,19 @@ const reorderCard = asyncHandler(async (req, res, next) => {
 
 //move card between list
 const moveCard = asyncHandler(async (req, res, next) => {
-    const {activeId, overId, newListId} = req.body;
+    const {activeCardId, overCardId, newListId} = req.body;
 
-    console.log({activeId, overId, newListId})
+    console.log({activeCardId, overCardId, newListId})
 
-    if (!activeId || !newListId) return next(new ApiError('activeId and newListId required', 400));
+    if (!activeCardId || !newListId) return next(new ApiError('activeId and newListId required', 400));
 
-    const activeCard = await Card.findByPk(activeId);
+    const activeCard = await Card.findByPk(activeCardId);
     if (!activeCard) return next(new ApiError('Card not found', 404));
 
     const cards = await Card.findAll({
         where: {listId: newListId},
         order: [['position', 'ASC']],
+        attributes: ['id', 'position'],
     })
 
     let newPosition;
@@ -100,23 +104,30 @@ const moveCard = asyncHandler(async (req, res, next) => {
     if (cards.length === 0) {
         //if lists is empty - start at 1000
         newPosition = 1000
-    } else if (!overId) {
+    } else if (!overCardId) {
         //if dropped at end of all card
-        newPosition = cards[cards.length - 1].position + 1000
+        newPosition = cards[cards.length - 1].position + 1000;
     } else {
-        const overIndex = cards.findIndex(card => card.id === overId);
-        if (overIndex === -1) return next(new ApiError('Invalid overId for this list', 400));
+        const overIndex = cards.findIndex(card => card.id === overCardId);
+
+        if (overIndex === -1) {
+            return next(new ApiError('Invalid overCardId for the target list.', 400));
+        }
 
         const prevCard = cards[overIndex - 1] || null
-        const nextCard = cards[overIndex] || null; // the item we are dropping on is the 'next' item
+        const nextCard = cards[overIndex]; // the item we are dropping on is the 'next' item
 
         if (!prevCard) {
-            //if dropped at first
+            // Dropped at the first position
             newPosition = nextCard.position / 2;
-        } else if (!nextCard) {
-            // if dropped at end
-            newPosition = prevCard.position + 1000;
+        } else if (overIndex === cards.length - 1) {
+            // **New Position Logic for Dropping AFTER the last card**
+            // If the drop target is the last card, we treat it as an insertion
+            // *after* that card. This handles the scenario where the front-end sends
+            // the last card's ID when dropping at the end.
+            newPosition = nextCard.position + 1000;
         } else {
+            // Dropped in between two cards
             newPosition = (prevCard.position + nextCard.position) / 2;
         }
     }

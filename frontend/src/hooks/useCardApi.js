@@ -45,15 +45,12 @@ const useMoveCard = () => {
     return useMutation({
         mutationFn: moveCard,
         onSuccess: (result, variables) => {
-            toast.success(result.message);
-            queryClient.invalidateQueries({queryKey: ['cards', variables.activeId]});
-            queryClient.invalidateQueries({queryKey: ['cards', variables.newListId]});
+            toast(result.message);
+            queryClient.invalidateQueries({queryKey: ['cards', variables?.activeId]});
+            queryClient.invalidateQueries({queryKey: ['cards', variables?.newListId]});
+            queryClient.invalidateQueries({queryKey: ['cards', variables?.listId]});
         },
-        onError: (error, vars, context) => {
-            console.log({vars, context})
-            // if (context?.prevData) {
-            //     queryClient.setQueryData(['cards', vars.listId], context.prevData);
-            // }
+        onError: (error) => {
             toast.error(error?.response?.data?.message);
         }
     })

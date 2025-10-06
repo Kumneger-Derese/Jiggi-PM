@@ -1,7 +1,6 @@
 import {List, Project} from '../models/index.js'
 import ApiError from '../utils/apiError.js'
 import asyncHandler from '../utils/asyncHandler.js'
-import sequelize from "../config/sequelize.js";
 
 //get list
 const getList = asyncHandler(async (req, res, next) => {
@@ -98,8 +97,10 @@ const reorderList = asyncHandler(async (req, res, next) => {
         return next(new ApiError('Both activeListId and overListId is required.', 400))
     }
 
-    const activeList = await List.findByPk(activeListId)
-    const overList = await List.findByPk(overListId)
+    const [activeList, overList] = await Promise.all([
+        List.findByPk(activeListId),
+        List.findByPk(overListId)
+    ])
 
     if (!activeList || !overList) {
         return next(new ApiError('One or both lists not found.', 404))
@@ -109,11 +110,12 @@ const reorderList = asyncHandler(async (req, res, next) => {
     const lists = await List.findAll({
         where: {projectId},
         order: [['position', 'ASC']],
+        attributes: ['id', 'position']
     })
 
     //remove activeItem and insert at overIndex
-    const activeIndex = lists?.findIndex(list => list?.id === activeListId)
-    const overIndex = lists?.findIndex(list => list?.id === overListId)
+    const activeIndex = lists.findIndex(list => list.id === activeListId)
+    const overIndex = lists.findIndex(list => list.id === overListId)
 
     lists.splice(activeIndex, 1)
     lists.splice(overIndex, 0, activeList)
@@ -143,52 +145,3 @@ const reorderList = asyncHandler(async (req, res, next) => {
 })
 
 export {getList, getLists, createList, updateList, deleteList, reorderList}
-
-
-// const reorderList2 = asyncHandler(async (req, res, next) => {
-//     const {projectId} = req.params
-//     const {activeListId, overListId} = req.body
-//
-//     if (!activeListId || !overListId) {
-//         return next(new ApiError('Both activeListId and overListId is required.', 400))
-//     }
-//
-//     const activeList = await List.findByPk(activeListId)
-//     const overList = await List.findByPk(overListId)
-//
-//     if (!activeList || !overList) {
-//         return next(new ApiError('One or both lists not found.', 404))
-//     }
-//
-//     // Fetch all lists in the project
-//     const lists = await List.findAll({
-//         where: {projectId},
-//         order: [['position', 'ASC']],
-//     })
-//
-//     //remove activeItem and insert at overIndex
-//     const activeIndex = lists?.findIndex(list => list.id === activeListId)
-//     const overIndex = lists?.findIndex(list => list.id === overListId)
-//
-//     lists.splice(activeIndex, 1)
-//     lists.splice(overIndex, 0, activeList)
-//
-//     //prepare CASE for bulk update
-//     const cases = lists
-//         .map((list, index) => `WHEN id = :id${index} THEN ${index + 1}`)
-//         .join(" ")
-//
-//     const ids = lists.map((_, index) => `:id${index}`).join(',')
-//     const query = `
-//         UPDATE "lists"
-//         SET "position" = CASE ${cases} END
-//         WHERE id IN (${ids})
-//     `;
-//     const replacements = {}
-//     lists.forEach((list, index) => {
-//         replacements[`id${index}`] = list.id
-//     })
-//
-//     await sequelize.query(query, {replacements})
-//     res.status(200).json({message: 'Reordered list successfully'})
-// })
