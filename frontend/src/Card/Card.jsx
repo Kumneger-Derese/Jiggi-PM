@@ -47,17 +47,17 @@ const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSele
             onMouseEnter={() => setMouseOver(true)}
             onMouseLeave={() => setMouseOver(false)}
             className={`m-2 p-4  hover:ring-2 hover:ring-offset hover:ring-sky-500 hover:border-none rounded-md
-             bg-neutral-700 min-h-32 flex flex-col gap-2 border border-neutral-600 cursor-grab`}
+             bg-neutral-700 min-h-32 h-32 flex flex-col gap-2 border border-neutral-600 cursor-grab`}
         >
             <div className={'flex-1 flex flex-col gap-2 overflow-y-auto'}>
                 <h2 className={'font-semibold'}>{card.title}</h2>
-                <p className={'text-sm text-neutral-400'}>{card.description}</p>
+                <div className={'text-sm text-neutral-400'}>{card.description}</div>
             </div>
 
             {/*Card action buttons*/}
             {
                 mouseOver && (
-                    <div className={'self-end flex gap-x-2 text-neutral-400'}>
+                    <div className={'self-end  flex gap-x-2 text-neutral-400'}>
                         <HiOutlineTrash
                             onClick={() => {
                                 setSelectedCard(card)

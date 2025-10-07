@@ -29,7 +29,7 @@ const List = () => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
-    const moveCardMutation = useMoveCard()
+    const moveCardMutation = useMoveCard(activeCard)
     const reorderCardMutation = useReorderCard()
     const reorderListMutation = useReorderList()
     const {
@@ -41,7 +41,8 @@ const List = () => {
 
     const projectListIds = useMemo(() => lists?.map(list => list.id), [lists])
 
-    // dnd context events for lists
+    // --- DND Handlers ---
+
     const onDragStart = e => {
         if (e.active.data.current?.type === 'List') {
             setActiveList(e.active.data.current.list)
@@ -52,89 +53,88 @@ const List = () => {
         }
     }
 
-    const onDragEnd = event => {
-        // This part handles LIST reordering
+    const onDragOver = (event) => {
         const {active, over} = event
 
-        setActiveList(null); // Cleanup
-        setActiveCard(null);  // Cleanup
+        if (!over || active.id === over.id) return
 
-        if (!over) return
+        // We are only interested in dragging cards over other CARDS for in-list reordering
+        const isActiveCard = active.data.current?.type === 'Card';
+        const isOverCard = over.data.current?.type === 'Card';
 
-        const activeIsList = active.data.current?.type === 'List';
-        if (!activeIsList) return; // Only handle list drag end here
+        if (!isActiveCard || !isOverCard) return;
 
-        const activeListId = active.id
-        const overListId = over.id
+        const activeCardListId = active.data.current?.card.listId
+        const overListId = over.data.current.card.listId
 
-        if (activeListId !== overListId) {
-            reorderListMutation.mutate({
-                projectId,
-                body: {activeListId, overListId}
+        // Scenario 1: Card reordering WITHIN the same list (for smooth visuals)
+        if (activeCardListId === overListId) {
+            reorderCardMutation.mutate({
+                activeCardId: active.id,
+                overCardId: over.id,
+                listId: activeCardListId
             })
         }
     }
 
-    const onDragOver = (event) => {
+    const onDragEnd = event => {
         const {active, over} = event
+
+        // Cleanup active items regardless of drop success
+        setActiveList(null);
+        setActiveCard(null);
 
         if (!over) return
 
-        const activeCardId = active.id
-        const overCardId = over.id
+        const activeIsList = active.data.current?.type === 'List';
+        const activeIsCard = active.data.current?.type === 'Card';
 
-        if (activeCardId === overCardId) return;
+        // 1. LIST REORDERING LOGIC (first)
+        if (activeIsList) {
+            const activeListId = active.id
+            const overListId = over.id
 
-        // We are only interested in dragging cards over other areas
-        const isActiveCard = active.data.current?.type === 'Card';
-        if (!isActiveCard) return;
-
-        // Get the list ID of the active card
-        const activeCardListId = active.data.current?.card.listId
-
-        // Determine the list ID of the item being hovered over
-        const isOverCard = over.data.current?.type === 'Card';
-        const isOverList = over.data.current?.type === 'List';
-
-        let overListId;
-
-        if (isOverList) {
-            // We are hovering over a list container directly
-            overListId = over.id;
-        } else if (isOverCard) {
-            // We are hovering over another card
-            overListId = over.data.current.card.listId
-        } else {
-            // Not hovering over a valid drop zone
-            return;
+            // Reorder List only if it landed on a DIFFERENT list item
+            if (activeListId !== overListId) {
+                reorderListMutation.mutate({
+                    projectId,
+                    body: {activeListId, overListId}
+                })
+            }
+            return; // Exit after list handling
         }
 
-        // Scenario 1: Moving a card to a DIFFERENT list
-        if (activeCardListId && overListId) {
-            if (moveCardMutation.isPending) return;
 
-            moveCardMutation.mutate({
-                activeCardId, // The ID of the card being moved
-                overCardId,
-                newListId: overListId, // The ID of the destination list
-                listId: activeCardListId, // I send this data for only react query cache invalidation
-            })
-            return; // Exit after firing mutation
+        // 2. CARD MOVE/REORDER LOGIC
+        if (activeIsCard) {
+            const activeCardId = active.id
+            const activeCardListId = active.data.current?.card.listId
+
+            const isOverCard = over.data.current?.type === 'Card';
+            const isOverList = over.data.current?.type === 'List';
+
+            let overListId = null;
+            let overCardId = null; // Will be null if dropped on the list container
+
+            if (isOverCard) {
+                overListId = over.data.current.card.listId;
+                overCardId = over.id; // Dropped on a specific card
+            } else if (isOverList) {
+                overListId = over.id; // Dropped on the list container itself
+                // overCardId remains null -> signals "place at end" to backend
+            } else {
+                return; // Dropped outside a valid zone
+            }
+
+            // Check if the card MOVED lists (This is the final commit)
+            if (activeCardListId !== overListId) {
+                moveCardMutation.mutate({
+                    activeCardId,
+                    overCardId,
+                    newListId: overListId,
+                })
+            }
         }
-
-        // Scenario 2: Reordering a card WITHIN the same list
-        // This only happens when hovering over another CARD in the same list
-        if (activeCardListId === overListId && isOverCard) {
-            if (reorderCardMutation?.isPending) return;
-
-            // reordering bn the same list
-            reorderCardMutation.mutate({
-                activeCardId,
-                overCardId,
-                listId: activeCardListId
-            })
-        }
-
     }
 
 

@@ -53,11 +53,11 @@ const ProjectList = () => {
   }
 
   return (
-    <div className='pb-4'>
+    <div className='pt-2'>
       <Navbar />
 
       {/* Project Header */}
-      <div className='flex justify-between items-center mb-8 mt-4'>
+      <div className='flex justify-between items-center mb-8 mt-6'>
         <h1 className='font-bold text-xl'>({projects?.length})Projects</h1>
 
         <button

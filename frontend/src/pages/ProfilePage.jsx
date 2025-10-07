@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useGetUserProfile, useUpdateUserProfile } from '../hooks/useUserApi.js'
+import {useAuth} from "../store/useAuthStore.js";
+import {useQueryClient} from "@tanstack/react-query";
 
 const ProfilePage = () => {
   const { data, isLoading, isError, error } = useGetUserProfile()
@@ -8,12 +10,24 @@ const ProfilePage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const {clearCredentials, user} = useAuth()
+  const queryClient = useQueryClient()
+
+
   const { mutate, isPending } = useUpdateUserProfile()
 
   useEffect(() => {
     setUsername(data?.username)
     setEmail(data?.email)
   }, [data])
+
+  const handleLogout = () => {
+    if (user) {
+      queryClient.resetQueries()
+      clearCredentials()
+      toast.error('ohh! you logged out.')
+    }
+  }
 
   if (isLoading) {
     return (
@@ -42,6 +56,12 @@ const ProfilePage = () => {
       <div className=''>
         <h3>Name : {data.username}</h3>
         <h3>Email : {data.email}</h3>
+        <button
+            onClick={handleLogout}
+            className='bg-red-400 py-2 px-4 rounded-xl hover:text-neutral-800 transition-colors duration-300'
+        >
+          Logout
+        </button>
       </div>
 
       <form

@@ -1,7 +1,7 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {createCard, deleteCard, getCard, getCards, moveCard, reorderCard, updateCard} from "../api/cardApi.js";
 import {toast} from "react-hot-toast";
 import {arrayMove} from "@dnd-kit/sortable";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {createCard, deleteCard, getCard, getCards, moveCard, reorderCard, updateCard} from "../api/cardApi.js";
 
 // hook to get a specific card
 const useGetCard = (cardId) => {
@@ -39,20 +39,91 @@ const useCreateCard = () => {
 }
 
 // hook to move card between lists
-const useMoveCard = () => {
+const useMoveCard = (activeCard) => {
     const queryClient = useQueryClient();
+    const oldListId = activeCard?.listId;
 
     return useMutation({
         mutationFn: moveCard,
+        onMutate: async (variables) => {
+            const {activeCardId, newListId} = variables;
+
+            let oldListId = null;
+            let cardToMove = null;
+
+            // Find the list the card is currently in. We check all cached 'cards' queries.
+            const cardsQueryKeys =
+                queryClient.getQueryCache().findAll(['cards']).map(query => query.queryKey);
+
+            for (const queryKey of cardsQueryKeys) {
+                const listId = queryKey[1]; // Assuming queryKey structure is ['cards', listId]
+                const cardsData = queryClient.getQueryData(queryKey);
+
+                if (cardsData) {
+                    const card = cardsData.find(c => c.id === activeCardId);
+                    if (card) {
+                        oldListId = listId;
+                        cardToMove = card;
+                        break;
+                    }
+                }
+            }
+
+            if (!oldListId || !cardToMove) {
+                // Cannot perform optimistic update without knowing the old list
+                return {};
+            }
+
+            // 2. Cancel any outgoing refetches for both old and new lists
+            await queryClient.cancelQueries({queryKey: ['cards', oldListId]});
+            await queryClient.cancelQueries({queryKey: ['cards', newListId]});
+
+            // 3. Create context to store the previous state for rollback
+            const previousCardsData = {
+                oldList: queryClient.getQueryData(['cards', oldListId]),
+                newList: queryClient.getQueryData(['cards', newListId]),
+            };
+
+            // 4. Optimistically update the OLD list (remove the card)
+            queryClient.setQueryData(['cards', oldListId], (old) =>
+                old ? old.filter(card => card.id !== activeCardId) : []
+            );
+
+            // 5. Optimistically update the NEW list (add the card)
+            queryClient.setQueryData(['cards', newListId], (old) => {
+                const newCard = {
+                    ...cardToMove,
+                    listId: newListId,
+                    // You might set a temporary position here if needed, but invalidation will fix it
+                };
+                return old ? [...old, newCard].sort((a, b) => a.position - b.position) : [newCard];
+            });
+
+            // Return context object to be used by onError
+            return {previousCardsData};
+        },
         onSuccess: (result, variables) => {
             toast(result.message);
-            queryClient.invalidateQueries({queryKey: ['cards', variables?.activeId]});
+            queryClient.invalidateQueries({queryKey: ['cards', variables?.activeCardId]});
             queryClient.invalidateQueries({queryKey: ['cards', variables?.newListId]});
-            queryClient.invalidateQueries({queryKey: ['cards', variables?.listId]});
+            queryClient.invalidateQueries({queryKey: ['cards', oldListId]});
         },
-        onError: (error) => {
+        onError: (error, variables, context) => {
             toast.error(error?.response?.data?.message);
-        }
+
+            // Rollback: Revert the UI state using the cached context
+            if (context?.previousCardsData) {
+                const {oldList, newList} = context.previousCardsData;
+
+                if (oldList) {
+                    queryClient.setQueryData(['cards', oldListId], oldList)
+                }
+
+                if (newList) {
+                    queryClient.setQueryData(['cards', variables.newListId], newList)
+                }
+            }
+        },
     })
 }
 
@@ -123,8 +194,6 @@ const useDeleteCard = () => {
     return useMutation({
         mutationFn: deleteCard,
         onSuccess: (result, vars) => {
-            console.log({result});
-            console.log({vars});
             toast.success('Card deleted.');
             queryClient.invalidateQueries({queryKey: ['cards', vars]});
             queryClient.invalidateQueries({queryKey: ['cards', result.listId]});
