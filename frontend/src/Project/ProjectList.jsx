@@ -8,10 +8,12 @@ import { useGetProjects } from '../hooks/useProjectApi.js'
 import DeleteProjectModal from './DeleteProjectModal.jsx'
 
 const ProjectList = () => {
+  const [currentProjectId, setCurrentProjectId] = useState(null)
+
+    // modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [currentProjectId, setCurrentProjectId] = useState(null)
 
   const { data: projects, isLoading, isError, error } = useGetProjects()
 
@@ -39,7 +41,7 @@ const ProjectList = () => {
     )
   }
 
-  //handle modals state
+  // modals state handler
   const handleCreateModalOpen = () => setIsCreateModalOpen(true)
 
   const handleDeleteModalOpen = projectId => {
@@ -53,7 +55,7 @@ const ProjectList = () => {
   }
 
   return (
-    <div className='pt-2'>
+    <div className='pt-2 mb-8'>
       <Navbar />
 
       {/* Project Header */}

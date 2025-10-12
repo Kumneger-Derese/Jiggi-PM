@@ -25,10 +25,12 @@ const List = () => {
     const [activeCard, setActiveCard] = useState(null);
     const [selectedList, setSelectedList] = useState(null) //to get listId for update
 
+    // modals state
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
 
+    // card and list fetching and mutation
     const moveCardMutation = useMoveCard(activeCard)
     const reorderCardMutation = useReorderCard()
     const reorderListMutation = useReorderList()
@@ -65,10 +67,10 @@ const List = () => {
         if (!isActiveCard || !isOverCard) return;
 
         const activeCardListId = active.data.current?.card.listId
-        const overListId = over.data.current.card.listId
+        const overCardListId = over.data.current.card.listId
 
         // Scenario 1: Card reordering WITHIN the same list (for smooth visuals)
-        if (activeCardListId === overListId) {
+        if (activeCardListId === overCardListId) {
             reorderCardMutation.mutate({
                 activeCardId: active.id,
                 overCardId: over.id,

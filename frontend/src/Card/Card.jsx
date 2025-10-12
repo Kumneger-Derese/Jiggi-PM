@@ -27,6 +27,7 @@ const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSele
         transform: CSS.Transform.toString(transform),
         transition,
     }
+    
     if (isDragging) {
         return (
             <div

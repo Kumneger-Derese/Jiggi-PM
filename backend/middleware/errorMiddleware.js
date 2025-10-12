@@ -25,7 +25,7 @@ const errorHandler = (err, req, res, next) => {
 
 // Do not leak info in production
     if (process.env.NODE_ENV === 'production' && !isOperational) {
-        statusCode = 500
+        statusCode = 500 
         message = 'Internal Server Error'
     }
 
@@ -36,6 +36,7 @@ const errorHandler = (err, req, res, next) => {
         stack:process.env.NODE_ENV === 'development' ? stack : null
     }
 
+    // in dev log information to the console
     if (process.env.NODE_ENV === 'development') {
         console.log(errorResponse)
     }

@@ -32,13 +32,8 @@ export const up = async ({context: queryInterface}) => {
             onUpdate: 'CASCADE',
         },
         role: {
-            type: DataTypes.ENUM('owner', 'admin', 'member', 'viewer'),
-            default: 'member',
-            allowNull: false
-        },
-        status: {
-            type: DataTypes.ENUM('active', 'removed', 'invited', 'left'),
-            default: 'invited',
+            type: DataTypes.ENUM('owner', 'editor', 'viewer'),
+            default: 'viewer',
             allowNull: false
         },
         createdAt: {

@@ -1,15 +1,15 @@
 import axios from 'axios'
 
 const Axios = axios.create({
-  baseURL: 'http://localhost:5100/api'
+  baseURL: import.meta.env.VITE_APP_BACKEND_URL,
 })
 
 Axios.interceptors.request.use(
   config => {
     const userString = localStorage.getItem('user')
-    const user = JSON.parse(userString)
+    const userObj = JSON.parse(userString)
 
-    const token = user && user.token
+    const token = userObj && userObj.token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }

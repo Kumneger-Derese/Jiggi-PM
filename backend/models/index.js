@@ -3,31 +3,40 @@ import List from './listModel.js'
 import Card from './cardModel.js'
 import Project from './projectModel.js'
 import ProjectMember from './ProjectMember.js'
+import Invite from './inviteModel.js'
 
 // User => Project
-User.hasMany(Project, { foreignKey: 'ownerId', as: 'projects' })
-Project.belongsTo(User, { foreignKey: 'ownerId', as: 'owner' })
+User.hasMany(Project, {foreignKey: 'ownerId', as: 'projects'})
+Project.belongsTo(User, {foreignKey: 'ownerId', as: 'owner'})
 
 // Project => List
-Project.hasMany(List, { foreignKey: 'projectId', as: 'lists' })
-List.belongsTo(Project, { foreignKey: 'projectId', as: 'project' })
+Project.hasMany(List, {foreignKey: 'projectId', as: 'lists'})
+List.belongsTo(Project, {foreignKey: 'projectId', as: 'project'})
 
 // List => Card
-List.hasMany(Card, { foreignKey: 'listId', as: 'cards' })
-Card.belongsTo(List, { foreignKey: 'listId', as: 'list' })
+List.hasMany(Card, {foreignKey: 'listId', as: 'cards'})
+Card.belongsTo(List, {foreignKey: 'listId', as: 'list'})
 
 // Project <=> Member
 User.belongsToMany(Project, {
-  through: ProjectMember,
-  foreignKey: 'projectId',
-  otherKey: 'userId',
-  as: 'project'
+    through: ProjectMember,
+    foreignKey: 'projectId',
+    otherKey: 'userId',
+    as: 'project'
 })
 Project.belongsToMany(User, {
-  through: ProjectMember,
-  foreignKey: 'userId',
-  otherKey: 'projectId',
-  as: 'member'
+    through: ProjectMember,
+    foreignKey: 'userId',
+    otherKey: 'projectId',
+    as: 'member'
 })
 
-export { User, Project, List, Card, ProjectMember }
+// User => Invite
+User.hasMany(Invite, {foreignKey: 'inviteId'})
+Invite.belongsTo(User, {foreignKey: 'inviteId', as: 'inviter'})
+
+//Project => Invite
+Project.hasMany(Invite, {foreignKey: 'projectId'})
+Invite.belongsTo(Project, {foreignKey: 'projectId'})
+
+export {User, Project, List, Card, ProjectMember,Invite}

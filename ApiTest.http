@@ -1,0 +1,25 @@
+POST http://localhost:5100/api/users/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "username": "kim18",
+  "email":"kim18@gmail.com",
+  "password": "kim18123"
+}
+
+###
+
+
+### Get User Profile
+GET http://localhost:5100/api/users/profile
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyN2VkZTczMC0zOGNlLTRjZDgtOTM2NC1iMDI5MWEwNWY0ZTYiLCJpYXQiOjE3NjAxMDM1NDAsImV4cCI6MTc2MjY5NTU0MH0.xhx1g5vaQTqWBsoJOAQrq3Wh8WLKY5NMWANtg1-pSqI
+
+###
+
+###
+GET http://localhost:5100/api/projects
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MjIxNjc2MS02MTdkLTRjNDktOWY0OS04NWE4YzllOTllODkiLCJpYXQiOjE3NjAwNDE4OTUsImV4cCI6MTc2MjYzMzg5NX0.39uAfP6iS7SpeSO3yqYUIUhGsBXMTZnlKr5IvSlSKBU
+
+###

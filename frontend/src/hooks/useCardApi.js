@@ -135,10 +135,10 @@ const useReorderCard = () => {
         mutationFn: reorderCard,
 
         //optimistic update
-        onMutate: (result) => {
-            const {activeCardId, overCardId, listId} = result
+        onMutate: async (variables) => {
+            const {activeCardId, overCardId, listId} = variables
 
-            queryClient.cancelQueries(['cards', listId])
+            await queryClient.cancelQueries({queryKey: ['cards', listId]})
 
             const prevData = queryClient.getQueryData(['cards', listId])
 

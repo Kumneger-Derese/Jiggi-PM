@@ -7,7 +7,7 @@ const Navbar = () => {
     return (
         <div
             className={
-                'flex justify-between py-1.5 px-6 rounded-xl font-semibold mt-2 bg-neutral-800 items-center'
+                'flex justify-between py-3 px-6 rounded-xl font-semibold mt-2 bg-neutral-800 items-center'
             }
         >
             <Link to={'/'} className={'text-sky-500 text-xl font-bold'}>

@@ -1,10 +1,10 @@
-import { User } from '../models/index.js'
-import asyncHandler from '../utils/asyncHandler.js'
-import ApiError from '../utils/apiError.js'
 import jwt from 'jsonwebtoken'
+import { User } from '../models/index.js'
+import ApiError from '../utils/apiError.js'
+import asyncHandler from '../utils/asyncHandler.js'
 
 const protect = asyncHandler(async (req, res, next) => {
-  const token = req.headers.authorization.split(' ')[1]
+  const token = req.headers?.authorization.split(' ')[1]
 
   if (token) {
     try {
