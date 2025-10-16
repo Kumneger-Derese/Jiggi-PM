@@ -2,6 +2,7 @@ import {Card} from '../models/index.js';
 import ApiError from "../utils/apiError.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import sequelize from "../config/sequelize.js";
+import {io} from "../socket.js";
 
 //get specific card
 const getCard = asyncHandler(async (req, res, next) => {
@@ -79,6 +80,8 @@ const reorderCard = asyncHandler(async (req, res, next) => {
     activeCard.position = newPosition;
     await activeCard.save()
 
+    if (io) io.to(listId).emit('syncCard', {listId, activeCardId})
+
     res.status(200).json({message: 'Card reordered.'})
 })
 
@@ -138,11 +141,16 @@ const moveCard = asyncHandler(async (req, res, next) => {
         }
     }
 
+    // before Moving
+
     await sequelize.transaction(async (transaction) => {
         activeCard.listId = newListId;
         activeCard.position = newPosition;
         await activeCard.save({transaction});
     });
+
+    // after moving
+    if (io) io.to(activeCard.listId).emit('syncCard', {listId: activeCard.listId, activeCardId})
 
     res.status(200).json({message: 'Card moved.'});
 })
@@ -161,6 +169,8 @@ const createCard = asyncHandler(async (req, res, next) => {
 
     if (!card) return next(new ApiError('Card not created', 400));
 
+    if (io) io.to(listId).emit('syncCard', {listId, cardId: card.id})
+
     res.status(200).json(card)
 })
 
@@ -178,6 +188,9 @@ const updateCard = asyncHandler(async (req, res, next) => {
 
     const updatedCard = await card.save()
 
+    const listId = updatedCard.listId
+    if (io) io.to(updatedCard.listId).emit('syncCard', {listId, cardId})
+
     res.status(200).json(updatedCard)
 })
 
@@ -190,6 +203,7 @@ const deleteCard = asyncHandler(async (req, res, next) => {
 
     await Card.destroy({where: {id: cardId}})
 
+    if (io) io.to(card.listId).emit('syncCard', {listId: card.listId, cardId})
     res.status(200).json({message: 'Card deleted successfully.', listId: card.listId})
 })
 

@@ -67,8 +67,8 @@ const useCreateList = () => {
     return useMutation({
         mutationFn: createList,
         onSuccess: (d, v) => {
-            queryClient.invalidateQueries({queryKey: ['lists', v.projectId]})
             toast.success('List Created.')
+            queryClient.invalidateQueries({queryKey: ['lists', v.projectId]})
         },
         onError: error => {
             toast.error(error?.response?.data?.message)
@@ -83,8 +83,8 @@ const useUpdateList = () => {
     return useMutation({
         mutationFn: updateList,
         onSuccess: (d) => {
-            queryClient.invalidateQueries({queryKey: ['lists', d.projectId]})
             toast.success('List Updated.')
+            queryClient.invalidateQueries({queryKey: ['lists', d.projectId]})
         },
         onError: error => {
             toast.error(error?.response?.data?.message)
@@ -99,9 +99,9 @@ const useDeleteList = () => {
     return useMutation({
         mutationFn: deleteList,
         onSuccess: (d, v) => {
+            toast.success('List Deleted.')
             queryClient.invalidateQueries({queryKey: ['lists', v]})
             queryClient.invalidateQueries({queryKey: ['lists', d.projectId]})
-            toast.success('List Deleted.')
         },
         onError: error => {
             toast.error(error?.response?.data?.message)

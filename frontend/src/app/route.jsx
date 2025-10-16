@@ -1,11 +1,6 @@
 import App from '../App'
 import Homepage from '../pages/Homepage'
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    Route,
-    Router
-} from 'react-router-dom'
+import {createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom'
 import LoginPage from '../pages/Loginpage'
 import RegisterPage from '../pages/RegisterPage'
 import ProfilePage from '../pages/ProfilePage.jsx'
@@ -14,6 +9,7 @@ import ProjectList from '../Project/ProjectList.jsx'
 import Lists from '../Lists/Lists.jsx'
 import Error from "../components/Error.jsx";
 import Dashboard from "../components/Dashboard.jsx";
+import InvitationPage from "../pages/InvitationPage.jsx";
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -27,6 +23,7 @@ const router = createBrowserRouter(
                 <Route path='/dashboard' element={<Dashboard/>}/>
                 <Route path='/projects' element={<ProjectList/>}/>
                 <Route path='/projects/:projectId' element={<Lists/>}/>
+                <Route path='/accept-invitation/:token' element={<InvitationPage/>}/>
             </Route>
         </Route>
     )

@@ -1,6 +1,7 @@
 import {List, Project} from '../models/index.js'
 import ApiError from '../utils/apiError.js'
 import asyncHandler from '../utils/asyncHandler.js'
+import {io} from "../socket.js";
 
 //get list
 const getList = asyncHandler(async (req, res, next) => {
@@ -54,6 +55,8 @@ const createList = asyncHandler(async (req, res, next) => {
 
     if (!list) return next(new ApiError('List not created.', 400))
 
+    const listId = list.id
+    if (io) io.to(projectId).emit('syncList', {projectId, listId})
     res.status(201).json(list)
 })
 
@@ -68,6 +71,9 @@ const updateList = asyncHandler(async (req, res, next) => {
         list.title = title
 
         const updatedList = await list.save()
+
+        const projectId = updatedList.projectId
+        if (io) io.to(projectId).emit('syncList', {projectId, listId})
         res.status(200).json(updatedList)
     } else {
         return next(new ApiError('List not found.', 404))
@@ -82,6 +88,8 @@ const deleteList = asyncHandler(async (req, res, next) => {
 
     if (list) {
         await List.destroy({where: {id: listId}})
+
+        if (io) io.to(list.projectId).emit('syncList', {projectId: list.projectId, listId})
         res.status(200).json({message: 'List deleted successfully', projectId: list.projectId})
     } else {
         return next(new ApiError('List to delete not found.', 404))
@@ -140,6 +148,8 @@ const reorderList = asyncHandler(async (req, res, next) => {
     //update only the moved list
     activeList.position = newPosition
     await activeList.save()
+
+    if (io) io.to(projectId).emit('syncList', {projectId, listId: activeList.id})
 
     res.status(200).json({message: 'List reordered.'})
 })

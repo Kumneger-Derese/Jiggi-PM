@@ -1,23 +1,18 @@
 import {useParams} from 'react-router-dom'
-import {useMemo, useState} from 'react'
+import {useEffect, useMemo, useState} from 'react'
 import {useGetLists, useReorderList} from '../hooks/useListApi.js'
 import {HiPlus} from 'react-icons/hi2'
 import ListContainer from './ListContainer.jsx'
-import {
-    DndContext,
-    DragOverlay,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-} from '@dnd-kit/core'
-import {SortableContext, horizontalListSortingStrategy} from '@dnd-kit/sortable'
+import {DndContext, DragOverlay, KeyboardSensor, PointerSensor, useSensor, useSensors,} from '@dnd-kit/core'
+import {horizontalListSortingStrategy, SortableContext} from '@dnd-kit/sortable'
 import {createPortal} from 'react-dom'
 import CreateListModal from './CreateListModal.jsx'
 import UpdateListModal from './UpdateListModal.jsx'
 import DeleteListModal from './DeleteListModal.jsx'
 import {useMoveCard, useReorderCard} from "../hooks/useCardApi.js";
 import Card from "../Card/Card.jsx";
+import {socket} from "../socket.js";
+import {useQueryClient} from "@tanstack/react-query";
 
 const List = () => {
     const {projectId} = useParams()
@@ -41,10 +36,26 @@ const List = () => {
         error: getListsError
     } = useGetLists(projectId)
 
+    const queryClient = useQueryClient()
     const projectListIds = useMemo(() => lists?.map(list => list.id), [lists])
 
-    // --- DND Handlers ---
+    useEffect(() => {
+        socket.connect()
 
+        socket.emit('joinListRoom', projectId)
+        socket.on('syncList', ({projectId, listId}) => {
+            queryClient.invalidateQueries({queryKey: ['lists', listId]})
+            queryClient.invalidateQueries({queryKey: ['lists', projectId]})
+        })
+
+        return () => {
+            socket.off('joinListRoom')
+            socket.off('syncList')
+            socket.disconnect()
+        }
+    }, [projectId, queryClient]);
+
+    // --- DND Handlers ---
     const onDragStart = e => {
         if (e.active.data.current?.type === 'List') {
             setActiveList(e.active.data.current.list)

@@ -52,7 +52,7 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className='p-8 flex gap-x-8 items-center h-screen justify-center'>
+    <div className='p-8 flex flex-col md:flex-row gap-8 items-center h-screen justify-center'>
       <div className=''>
         <h3>Name : {data.username}</h3>
         <h3>Email : {data.email}</h3>
@@ -67,7 +67,7 @@ const ProfilePage = () => {
       <form
         onSubmit={handleUpdateUser}
         className={
-          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-3/6 mx-auto bg-neutral-800 text-neutral-300'
+          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
         }
       >
         <h1 className='font-black text-2xl text-center text-sky-500 mb-8'>

@@ -10,7 +10,6 @@ const ProjectMember = sequelize.define("ProjectMember", {
     },
     userId: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         references: {
             model: 'users',
@@ -21,7 +20,6 @@ const ProjectMember = sequelize.define("ProjectMember", {
     },
     projectId: {
         type: DataTypes.UUID,
-        defaultValue: DataTypes.UUIDV4,
         allowNull: false,
         references: {
             model: 'projects',
@@ -32,20 +30,17 @@ const ProjectMember = sequelize.define("ProjectMember", {
     },
     role: {
         type: DataTypes.ENUM('owner', 'editor', 'viewer'),
-        default: 'viewer',
+        defaultValue: 'viewer',
         allowNull: false
     },
-    permissions: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
-    joinedAt: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+    status: {
+        type: DataTypes.ENUM('pending', 'accepted', 'rejected', 'expired'),
+        defaultValue: 'pending',
+        allowNull: false
     },
 }, {
     modelName: 'ProjectMember',
-    tableName: 'ProjectMember',
+    tableName: 'project_members',
     timestamps: true,
 })
 

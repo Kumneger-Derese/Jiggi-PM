@@ -32,9 +32,9 @@ const useCreateProject = () => {
   return useMutation({
     mutationFn: createProject,
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
+    onSuccess: async () => {
       toast.success('Project Created.')
+      await queryClient.invalidateQueries({ queryKey: ['projects'] })
     },
 
     onError: error => {
@@ -50,11 +50,11 @@ const useUpdateProject = () => {
   return useMutation({
     mutationFn: updateProject,
 
-    onSuccess: (data, vaiables) => {
+    onSuccess: async (data, variables) => {
       toast.success('Project Updated.')
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({
-        queryKey: ['projects', vaiables.projectId]
+      await queryClient.invalidateQueries({ queryKey: ['projects'] })
+      await queryClient.invalidateQueries({
+        queryKey: ['projects', variables.projectId]
       })
     },
 
@@ -71,10 +71,10 @@ const useDeleteProject = () => {
   return useMutation({
     mutationFn: deleteProject,
 
-    onSuccess: (data, vaiables) => {
+    onSuccess: async (data, variables) => {
       toast.success('Project Deleted.')
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
-      queryClient.invalidateQueries({ queryKey: ['projects', vaiables] })
+      await queryClient.invalidateQueries({ queryKey: ['projects'] })
+      await queryClient.invalidateQueries({ queryKey: ['projects', variables] })
     },
 
     onError: error => {

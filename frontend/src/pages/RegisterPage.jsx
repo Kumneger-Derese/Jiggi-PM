@@ -33,7 +33,7 @@ const RegisterPage = () => {
       <form
         onSubmit={registerUser}
         className={
-          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-3/6 mx-auto bg-neutral-800 text-neutral-300'
+          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
         }
       >
         <h1 className='font-black text-2xl text-center text-sky-500 mb-8'>

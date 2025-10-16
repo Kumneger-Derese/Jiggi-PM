@@ -3,12 +3,14 @@ import {SortableContext, useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {TbEdit} from "react-icons/tb";
 import {useGetCards} from "../hooks/useCardApi.js";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import Card from "../Card/Card.jsx";
 import EmptyCard from "../Card/EmptyCard.jsx";
 import CreateCardModal from "../Card/CreateCardModal.jsx";
 import UpdateCardModal from "../Card/UpdateCardModal.jsx";
 import DeleteCardModal from "../Card/DeleteCardModal.jsx";
+import {useQueryClient} from "@tanstack/react-query";
+import {socket} from "../socket.js";
 
 const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSelectedList}) => {
     const [selectedCard, setSelectedCard] = useState(null);
@@ -19,6 +21,25 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
 
     const {data: cards, isLoading, isError, error} = useGetCards(list?.id)
     const cardIds = useMemo(() => cards?.map(card => card.id), [cards])
+
+    const listId = list.id
+    const queryClient = useQueryClient()
+
+    useEffect(() => {
+        socket.connect()
+
+        socket.emit('joinCardRoom', listId)
+        socket.on('syncCard', ({listId, cardId}) => {
+            queryClient.invalidateQueries({queryKey: ['cards', cardId]})
+            queryClient.invalidateQueries({queryKey: ['cards', listId]})
+        })
+
+        return () => {
+            socket.off('joinCardRoom')
+            socket.off('syncCard')
+            socket.disconnect()
+        }
+    }, [queryClient, listId]);
 
     const {
         listeners,
@@ -112,20 +133,20 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
             </div>
 
             {/*list tasks*/}
-                <div className={'flex flex-col flex-1 p-2 overflow-x-hidden overflow-y-auto'}>
-                    {cards?.length === 0 && <EmptyCard/>}
-                    <SortableContext items={cardIds}>
-                        {cards?.map((card) => (
-                            <Card
-                                card={card}
-                                key={card.id}
-                                setSelectedCard={setSelectedCard}
-                                setIsDeleteCardModalOpen={setIsDeleteCardModalOpen}
-                                setIsUpdateCardModalOpen={setIsUpdateCardModalOpen}
-                            />
-                        ))}
-                    </SortableContext>
-                </div>
+            <div className={'flex flex-col flex-1 p-2 overflow-x-hidden overflow-y-auto'}>
+                {cards?.length === 0 && <EmptyCard/>}
+                <SortableContext items={cardIds}>
+                    {cards?.map((card) => (
+                        <Card
+                            card={card}
+                            key={card.id}
+                            setSelectedCard={setSelectedCard}
+                            setIsDeleteCardModalOpen={setIsDeleteCardModalOpen}
+                            setIsUpdateCardModalOpen={setIsUpdateCardModalOpen}
+                        />
+                    ))}
+                </SortableContext>
+            </div>
 
             {/*add task button*/}
             <button onClick={() => setIsCreateModalOpen(true)}
