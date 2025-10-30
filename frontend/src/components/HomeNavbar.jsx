@@ -2,7 +2,7 @@ import {Link} from 'react-router-dom'
 import {useAuth} from '../store/useAuthStore'
 
 const Navbar = () => {
-    const { user} = useAuth()
+    const {user} = useAuth()
 
     return (
         <div
@@ -15,7 +15,6 @@ const Navbar = () => {
             </Link>
 
 
-
             <div className={'flex gap-x-4 items-center pr-2'}>
                 {!user && (
                     <div className='flex gap-x-4 items-center py-2'>
@@ -26,9 +25,9 @@ const Navbar = () => {
 
                 {user && (
                     <div className='flex gap-x-4 items-center'>
+                        <Link to={'/projects'}>Projects</Link>
                         <Link to={'/profile'}>Profile</Link>
                         <Link to={'/dashboard'}>Dashboard</Link>
-                        <Link to={'/projects'}>Projects</Link>
                     </div>
                 )}
             </div>

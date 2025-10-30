@@ -1,11 +1,13 @@
-import {HiOutlineTrash} from "react-icons/hi2";
+import {HiOutlineCheck, HiOutlineTrash} from "react-icons/hi2";
 import {HiOutlinePencilAlt} from "react-icons/hi";
 import {useSortable} from "@dnd-kit/sortable";
 import {CSS} from "@dnd-kit/utilities";
 import {useState} from "react";
+import {useCompleteCard} from "../hooks/useCardApi.js";
 
 const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSelectedCard}) => {
     const [mouseOver, setMouseOver] = useState(false);
+    const completeCardMutation = useCompleteCard()
 
     const {
         listeners,
@@ -22,12 +24,19 @@ const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSele
         }
     })
 
+    const handleCompleteCard = () => {
+        completeCardMutation.mutate({
+            cardId: card?.id
+        })
+    }
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
+        touchAction:'none',
+        backgroundColor: card.isCompleted ? '#262626' : ''
     }
-    
+
     if (isDragging) {
         return (
             <div
@@ -39,6 +48,13 @@ const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSele
         )
     }
 
+    const toggleCardStyle = {
+        textDecorationLine: card.isCompleted ? 'line-through' : '',
+        textDecorationThickness: card.isCompleted ? '2px' : '',
+        textDecorationColor: card.isCompleted ? 'oklch(68.5% 0.169 237.323)' : '',
+        color: card.isCompleted ? '#a29e9e' : '',
+    }
+
     return (
         <div
             {...attributes}
@@ -47,31 +63,36 @@ const Card = ({card, setIsUpdateCardModalOpen, setIsDeleteCardModalOpen, setSele
             ref={setNodeRef}
             onMouseEnter={() => setMouseOver(true)}
             onMouseLeave={() => setMouseOver(false)}
-            className={`m-2 p-4  hover:ring-2 hover:ring-offset hover:ring-sky-500 hover:border-none rounded-md
+            className={`m-2 p-4 hover:ring-2 hover:ring-offset hover:ring-sky-500 hover:border-none rounded-md
              bg-neutral-700 min-h-32 h-32 flex flex-col gap-2 border border-neutral-600 cursor-grab`}
         >
             <div className={'flex-1 flex flex-col gap-2 overflow-y-auto'}>
-                <h2 className={'font-semibold'}>{card.title}</h2>
-                <div className={'text-sm text-neutral-400'}>{card.description}</div>
+                <h2 style={toggleCardStyle} className={`font-semibold`}>{card.title}</h2>
+                <div style={toggleCardStyle} className={`text-sm text-neutral-400`}>{card.description}</div>
             </div>
 
             {/*Card action buttons*/}
             {
                 mouseOver && (
                     <div className={'self-end  flex gap-x-2 text-neutral-400'}>
+                        <HiOutlineCheck
+                            onClick={handleCompleteCard}
+                            strokeWidth={2}
+                            className={'hover:text-green-400'}/>
+
                         <HiOutlineTrash
                             onClick={() => {
                                 setSelectedCard(card)
                                 setIsDeleteCardModalOpen(true)
                             }}
-                            className={'hover:text-red-200'}/>
+                            className={'hover:text-red-300'}/>
 
                         <HiOutlinePencilAlt
                             onClick={() => {
                                 setSelectedCard(card)
                                 setIsUpdateCardModalOpen(true)
                             }}
-                            className={'hover:text-yellow-200'}/>
+                            className={'hover:text-yellow-300'}/>
                     </div>
                 )
             }

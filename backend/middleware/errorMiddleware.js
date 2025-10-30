@@ -38,7 +38,7 @@ const errorHandler = (err, req, res, next) => {
 
     // in dev log information to the console
     if (process.env.NODE_ENV === 'development') {
-        console.log(errorResponse)
+        console.log(err)
     }
 
     res.status(statusCode).json(errorResponse)

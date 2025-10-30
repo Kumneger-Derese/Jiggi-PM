@@ -4,6 +4,10 @@ const getCard = async (cardId) => {
     const {data} = await Axios.get(`/cards/${cardId}`);
     return data
 }
+const completeCard = async (payload) => {
+    const {data} = await Axios.put(`/cards/complete`, payload);
+    return data
+}
 
 const getCards = async (listId) => {
     const {data} = await Axios.get(`/cards/all/${listId}`);
@@ -36,4 +40,4 @@ const deleteCard = async (cardId) => {
     return data
 }
 
-export {getCard, getCards, createCard, updateCard, deleteCard, reorderCard, moveCard}
+export {getCard, getCards, createCard, updateCard, deleteCard, reorderCard, moveCard, completeCard}

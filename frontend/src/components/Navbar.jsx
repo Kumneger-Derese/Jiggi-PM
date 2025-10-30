@@ -13,11 +13,11 @@ const Navbar = () => {
         >
             <Link to={'/profile'} className={'flex gap-x-1 items-center text-sky-300 font-semibold'}>
                 <HiOutlineUserCircle size={22} strokeWidth={1.5}/>
-                {user && <h2>{user?.username.toLocaleLowerCase()}</h2>}
+               <span className={'hidden sm:block'}> {user && <h2>{user?.username.toLocaleLowerCase()}</h2>}</span>
             </Link>
 
 
-            <div className={'flex gap-x-4 items-center pr-2'}>
+            <div className={'flex gap-x-4 items-center sm:pr-2'}>
                 {!user && (
                     <div className='flex gap-x-4 items-center py-2'>
                         <Link to={'/login'}>Login</Link>

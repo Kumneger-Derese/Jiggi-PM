@@ -20,8 +20,7 @@ const useGetProjects = () => {
 const useGetProject = projectId => {
   return useQuery({
     queryKey: ['projects', projectId],
-    queryFn: () => getProject(projectId),
-    enabled: !!projectId
+    queryFn: () => getProject(projectId)
   })
 }
 

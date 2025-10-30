@@ -11,6 +11,8 @@ import UpdateCardModal from "../Card/UpdateCardModal.jsx";
 import DeleteCardModal from "../Card/DeleteCardModal.jsx";
 import {useQueryClient} from "@tanstack/react-query";
 import {socket} from "../socket.js";
+import ComponentError from "../components/ComponentError.jsx";
+import Loading from "../components/Loading.jsx";
 
 const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSelectedList}) => {
     const [selectedCard, setSelectedCard] = useState(null);
@@ -73,26 +75,10 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
 
     // // Loading and error state
     if (isLoading) {
-        return (
-            <div
-                className={
-                    'min-h-screen flex items-center justify-center font-bold text-2xl text-sky-500'
-                }
-            >
-                Loading...
-            </div>
-        )
+        return <Loading/>
     }
     if (isError) {
-        return (
-            <div
-                className={
-                    'min-h-screen flex items-center justify-center font-bold text-2xl text-red-500'
-                }
-            >
-                {error.response?.data?.message}
-            </div>
-        )
+        return <ComponentError message={error?.response?.data?.message}/>
     }
 
     return (
@@ -105,7 +91,8 @@ const ListContainer = ({list, setIsUpdateModalOpen, setIsDeleteModalOpen, setSel
             <div{...attributes} {...listeners}
                 className={'font-semibold cursor-grab text-neutral-200 flex justify-between items-center bg-neutral-600 line-clamp-1 rounded-md p-2'}>
 
-                <div className={'flex items-center justify-center py-1 px-2 rounded-full text-sm bg-neutral-800'}>
+                <div
+                    className={'flex items-center justify-center py-1 px-2 rounded-full text-sm bg-neutral-800'}>
                     {cards?.length}
                 </div>
 

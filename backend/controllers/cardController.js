@@ -4,6 +4,29 @@ import asyncHandler from "../utils/asyncHandler.js";
 import sequelize from "../config/sequelize.js";
 import {io} from "../socket.js";
 
+const completeCard = asyncHandler(async (req, res, next) => {
+    let message
+    const {cardId} = req.body;
+
+    const card = await Card.findOne({where: {id: cardId}})
+
+    if (!card) return next(new ApiError('Card not found', 404))
+
+    if (card.isCompleted) {
+        card.isCompleted = false;
+        message = 'Task not completed'
+        if (io) io.to(card.listId).emit('syncCard', {listId: card.listId, cardId});
+        await card.save();
+    } else {
+        card.isCompleted = true;
+        message = 'Task completed'
+        if (io) io.to(card.listId).emit('syncCard', {listId: card.listId, cardId});
+        await card.save();
+    }
+
+    res.status(200).json({message});
+})
+
 //get specific card
 const getCard = asyncHandler(async (req, res, next) => {
     const {cardId} = req.params;
@@ -207,4 +230,4 @@ const deleteCard = asyncHandler(async (req, res, next) => {
     res.status(200).json({message: 'Card deleted successfully.', listId: card.listId})
 })
 
-export {getCard, getCards, createCard, updateCard, deleteCard, reorderCard, moveCard}
+export {getCard, getCards, createCard, updateCard, deleteCard, reorderCard, moveCard, completeCard}

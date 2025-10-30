@@ -21,6 +21,10 @@ const Card = sequelize.define("Card", {
             allowNull: false,
             defaultValue: 1
         },
+        isCompleted: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         listId: {
             type: DataTypes.UUID,
             allowNull: false,

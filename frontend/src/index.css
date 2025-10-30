@@ -1,21 +1,44 @@
 @import 'tailwindcss';
 
-body, html {
-    @apply bg-neutral-900 text-neutral-100;
+body,
+html {
+  @apply bg-neutral-900  text-neutral-100;
 }
 
-::-webkit-scrollbar{
-    width: 4px;
+::-webkit-scrollbar {
+  width: 4px;
 }
-::-webkit-scrollbar:horizontal{
-    height: 6px;
+::-webkit-scrollbar:horizontal {
+  height: 6px;
 }
-::-webkit-scrollbar:vertical{
-    width: 6px;
+::-webkit-scrollbar:vertical {
+  width: 6px;
 }
-::-webkit-scrollbar-thumb:vertical{
-    @apply bg-neutral-700 rounded-md;
+::-webkit-scrollbar-thumb:vertical {
+  @apply bg-neutral-700 rounded-md;
 }
-::-webkit-scrollbar-thumb{
-    @apply bg-sky-600 rounded-md;
+::-webkit-scrollbar-thumb {
+  @apply bg-sky-600 rounded-md;
+}
+
+.shimmer-bg {
+  background: linear-gradient(
+    to right,
+    #5ca5ee 0%,
+    #f89940 20%,
+    #19e690 40%,
+    #e41359 80%,
+    #5ca5ee 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2.3s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
 }

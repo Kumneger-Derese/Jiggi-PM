@@ -20,4 +20,5 @@ const invitedProjects = async () => {
     const {data} = await Axios('/invitations/projects')
     return data
 }
+
 export {sendInvite, verifyInvite, acceptInvite, invitedProjects}

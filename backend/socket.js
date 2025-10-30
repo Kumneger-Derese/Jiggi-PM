@@ -17,6 +17,12 @@ const socketHandlers = (socket) => {
         console.log(`Socket ${socket.id} joined room ${listId}.`)
     })
 
+    //handle for 'invited' project lists
+    socket.on('invitedProjectList', () => {
+        socket.join(`Invited`)
+        console.log(`Socket ${socket.id} joined room invitedProjectList.`)
+    })
+
     socket.on('disconnect', () => {
         console.log(`🔥 Socket ${socket.id} disconnected`)
     })

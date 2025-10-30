@@ -39,7 +39,7 @@ Project.hasMany(Invite, {foreignKey: 'projectId'})
 Invite.belongsTo(Project, {foreignKey: 'projectId'})
 
 // ProjectMember => User & Project
-ProjectMember.belongsTo(User, {foreignKey: 'userId'})
+ProjectMember.belongsTo(User, {foreignKey: 'userId', as: 'user'})
 ProjectMember.belongsTo(Project, {foreignKey: 'projectId', as: 'project'})
 
 export {User, Project, List, Card, ProjectMember, Invite}

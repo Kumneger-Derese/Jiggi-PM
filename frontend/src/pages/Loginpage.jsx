@@ -27,14 +27,14 @@ const LoginPage = () => {
   }
 
   return (
-    <div className='p-8 min-h-screen flex items-center justify-center'>
+    <div className='p-6 sm:p-8 min-h-screen flex items-center justify-center'>
       <form
         onSubmit={loginUser}
         className={
-          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
+          'py-4 px-6 sm:px-12 mb-4 rounded-md flex flex-col gap-y-3 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
         }
       >
-        <h1 className='font-black text-2xl text-center text-sky-500 mb-8'>
+        <h1 className='font-black text-2xl mt-4 text-center text-sky-500 mb-8'>
           Login Here
         </h1>
         <div className={'flex flex-col gap-1'}>
@@ -78,9 +78,8 @@ const LoginPage = () => {
           className={
             'px-4 py-2 rounded-md text-black bg-sky-500 font-semibold disabled:bg-neutral-600 disabled:text-neutral-200'
           }
-          disabled={isPending}
         >
-          Submit
+          {isPending ? 'Processing' : 'Submit'}
         </button>
 
         <div className='mt-2 text-neutral-400'>

@@ -39,11 +39,11 @@ const useAcceptInvite = () => {
 
     return useMutation({
         mutationFn: acceptInvite,
-        onSuccess: async (result,variables) => {
+        onSuccess: async (result, variables) => {
             toast.success(result.message)
             navigate('/projects')
             await queryClient.invalidateQueries({queryKey: ['invite']})
-            await queryClient.invalidateQueries({queryKey: ['invite',variables.token]})
+            await queryClient.invalidateQueries({queryKey: ['invite', variables.token]})
         },
         onError: (error) => {
             toast.error(error.response?.data?.message)
