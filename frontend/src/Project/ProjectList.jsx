@@ -71,7 +71,7 @@ const ProjectList = () => {
       <Navbar />
 
       {/* Project Header */}
-      <div className='flex justify-around sm:justify-between items-center  mb-8 mt-6'>
+      <div className='flex justify-around sm:justify-between items-center sm:pl-8 my-6'>
         <h1 className='font-bold text-xl'>({projects?.length})Projects</h1>
 
         <button
@@ -82,7 +82,7 @@ const ProjectList = () => {
         </button>
       </div>
 
-      <div className='grid grid-cols-1 place-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-12'>
+      <div className='grid grid-cols-1 place-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-12 '>
         {/* Create Project */}
         <div
           onClick={handleCreateModalOpen}
@@ -108,11 +108,12 @@ const ProjectList = () => {
       {/*Invited Project list if available */}
       {invitedProjects?.length > 0 && (
         <section className={'flex flex-col gap-y-4 mt-8'}>
-          <h1 className='font-bold text-xl pl-4 sm:pl-0 '>
-            ({invitedProjects?.length}) Invited Projects
+          <h1 className='font-bold text-xl pl-8 text-neutral-200'>
+            ({invitedProjects?.length}){' '}
+            <span className='text-neutral-400'>Invited Projects</span>
           </h1>
 
-          <div className='grid grid-cols-1 justify-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid grid-cols-1 place-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-12'>
             {invitedProjects?.map(p => (
               <InvitedProjectCard key={p.id} p={p} />
             ))}
