@@ -67,11 +67,11 @@ const ProjectList = () => {
   }
 
   return (
-    <div className='sm:pt-2 mb-8 px-2'>
+    <div className='sm:pt-2 sm:px-8 mb-8'>
       <Navbar />
 
       {/* Project Header */}
-      <div className='flex justify-between items-center  mb-8 mt-6'>
+      <div className='flex justify-around sm:justify-between items-center  mb-8 mt-6'>
         <h1 className='font-bold text-xl'>({projects?.length})Projects</h1>
 
         <button
@@ -82,12 +82,12 @@ const ProjectList = () => {
         </button>
       </div>
 
-      <div className='grid grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-        {/* Create Project Card */}
+      <div className='grid grid-cols-1 place-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3 mx-12'>
+        {/* Create Project */}
         <div
           onClick={handleCreateModalOpen}
           className={
-            'w-[355px] md:w-80 h-48 p-4 border border-neutral-600 rounded-xl flex items-center justify-center hover:bg-neutral-700 gap-y-4 bg-neutral-800 hover:text-sky-500 transition-colors duration-300'
+            'w-[355px] md:w-80 h-48 mx-40 border border-neutral-600 rounded-xl flex items-center justify-center hover:bg-neutral-700 gap-y-4 bg-neutral-800 hover:text-sky-500 transition-colors duration-300'
           }
         >
           <HiPlus size={40} strokeWidth={0.2} />
@@ -108,12 +108,11 @@ const ProjectList = () => {
       {/*Invited Project list if available */}
       {invitedProjects?.length > 0 && (
         <section className={'flex flex-col gap-y-4 mt-8'}>
-          <h1 className='font-bold text-xl'>
-            {' '}
+          <h1 className='font-bold text-xl pl-4 sm:pl-0 '>
             ({invitedProjects?.length}) Invited Projects
           </h1>
 
-          <div className='grid grid-cols-1 place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+          <div className='grid grid-cols-1 justify-content-center place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3'>
             {invitedProjects?.map(p => (
               <InvitedProjectCard key={p.id} p={p} />
             ))}

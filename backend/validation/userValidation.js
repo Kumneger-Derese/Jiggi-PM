@@ -1,7 +1,7 @@
 import Joi from 'joi'
 
 const registerSchema = Joi.object({
-  username: Joi.string().alphanum().min(3).required().messages({
+  username: Joi.string().min(3).required().messages({
     'string.base': 'username must be string.',
     'string.empty': 'username cannot be empty',
     'string.min': 'username must be at least 3 character.'
@@ -32,13 +32,13 @@ const loginSchema = Joi.object({
 })
 
 const updateProfileSchema = Joi.object({
-  username: Joi.string().alphanum().allow('').min(3).optional().messages({
+  username: Joi.string().allow('').min(3).optional().messages({
     'string.base': 'username must be string.',
     'string.min': 'username must be at least 3 character.'
   }),
   email: Joi.string().email().optional().allow('').messages({
     'string.email': 'email must be a valid email',
-    'string.base': 'email must be string.',
+    'string.base': 'email must be string.'
   }),
   password: Joi.string().min(6).optional().allow('').messages({
     'string.base': 'password must be string.',
@@ -46,4 +46,4 @@ const updateProfileSchema = Joi.object({
   })
 })
 
-export { registerSchema,loginSchema,updateProfileSchema }
+export { registerSchema, loginSchema, updateProfileSchema }

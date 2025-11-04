@@ -1,19 +1,29 @@
-import HomeNavbar from "../components/HomeNavbar.jsx";
+import Hero from '../Home/Hero.jsx'
+import Stats from '../Home/Stats.jsx'
+import Pricing from '../Home/Pricing.jsx'
+import Benefits from '../Home/Benefits.jsx'
+import Features from '../Home/Features.jsx'
+import Collaboration from '../Home/Collaboration.jsx'
+import Testimonials from '../Home/Testimonials.jsx'
+import CTA from '../Home/CTA.jsx'
+import Footer from '../Home/Footer.jsx'
 
 const Homepage = () => {
-    return (
-        <div className={`min-h-screen flex flex-col gap-y-4`}>
-            <HomeNavbar/>
+  return (
+    <div className={`flex flex-col gap-y-24 font-poppins`}>
+      <Hero />
 
-            <div className='flex flex-col gap-y-2 m-auto '>
-                <h1 className='text-3xl font-bold text-sky-500 text-center'>
-                    Welcome To <span className='underline'>Jiggi</span>
-                </h1>
-                <h2 className='text-neutral-400'>
-                    A modern and performant project management app
-                </h2>
-            </div>
-        </div>
-    )
+      <div className='px-8 flex flex-col gap-y-32'>
+        <Benefits />
+        <Features />
+        <Collaboration />
+        <Stats />
+        <Testimonials />
+        <Pricing />
+        <CTA />
+        <Footer />
+      </div>
+    </div>
+  )
 }
 export default Homepage

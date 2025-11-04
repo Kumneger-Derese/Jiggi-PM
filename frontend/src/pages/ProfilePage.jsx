@@ -1,29 +1,28 @@
+import toast from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-import { useGetUserProfile, useUpdateUserProfile } from '../hooks/useUserApi.js'
+import Loading from '../components/Loading.jsx'
+import { HiChevronLeft } from 'react-icons/hi2'
 import { useAuth } from '../store/useAuthStore.js'
 import { useQueryClient } from '@tanstack/react-query'
-import toast from 'react-hot-toast'
-import Loading from '../components/Loading.jsx'
 import ComponentError from '../components/ComponentError.jsx'
-import { Link } from 'react-router-dom'
-import { HiChevronLeft } from 'react-icons/hi2'
+import { useGetUserProfile, useUpdateUserProfile } from '../hooks/useUserApi.js'
 
 const ProfilePage = () => {
-  const { data, isLoading, isError, error } = useGetUserProfile()
+  const { data: userInfo, isLoading, isError, error } = useGetUserProfile()
 
-  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
   const { clearCredentials, user } = useAuth()
   const queryClient = useQueryClient()
-
   const { mutate, isPending } = useUpdateUserProfile()
 
   useEffect(() => {
-    setUsername(data?.username)
-    setEmail(data?.email)
-  }, [data])
+    setUsername(userInfo?.username)
+    setEmail(userInfo?.email)
+  }, [userInfo])
 
   const handleLogout = () => {
     if (user) {
@@ -31,7 +30,7 @@ const ProfilePage = () => {
       queryClient.removeQueries()
       queryClient.clear()
       clearCredentials()
-      toast.error('ohh! you logged out.')
+      toast.success('ohh! you logged out.')
     }
   }
 
@@ -40,9 +39,7 @@ const ProfilePage = () => {
   }
 
   if (isError) {
-    return (
-      <ComponentError message={error.message || ' Something went wrong.'} />
-    )
+    return <ComponentError message={error?.response?.data?.message} />
   }
 
   const handleUpdateUser = e => {
@@ -51,8 +48,18 @@ const ProfilePage = () => {
     mutate({ username, email, password })
   }
 
+  const nameArr = userInfo?.username?.split(' ')
+  const nameTemplate = () => {
+    if (nameArr.length > 1) {
+      const nameLetter = nameArr?.map(n => n.at(0))
+      return nameLetter.join('')
+    } else {
+      return nameArr
+    }
+  }
+
   return (
-    <div className='p-8 flex flex-col md:flex-row gap-8 items-center h-screen justify-center'>
+    <div className='p-6 sm:p-8 flex flex-col md:flex-row gap-8 items-center h-screen justify-center'>
       {/* back button */}
       <Link to={'/projects'}>
         <HiChevronLeft
@@ -62,9 +69,12 @@ const ProfilePage = () => {
         />
       </Link>
 
-      <div className=''>
-        <h3>Name : {data.username}</h3>
-        <h3>Email : {data.email}</h3>
+      <div className='flex flex-col space-y-1 text-center'>
+        <h3 className='size-24 text-4xl font-black mb-4 flex items-center justify-center mx-auto rounded-full bg-linear-to-bl from-sky-400 to-sky-700 capitalize'>
+          {nameTemplate()}
+        </h3>
+        <h3 className='text-neutral-500'>{userInfo.username}</h3>
+        <h3 className='text-neutral-500'>{userInfo.email}</h3>
         <button
           onClick={handleLogout}
           className='bg-red-400 py-2 px-4 rounded-xl hover:text-neutral-800 transition-colors duration-300'
@@ -72,10 +82,12 @@ const ProfilePage = () => {
           Logout
         </button>
       </div>
+
+      {/* Update Form */}
       <form
         onSubmit={handleUpdateUser}
         className={
-          'py-4 px-12 mb-4 rounded-md flex flex-col gap-y-2 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
+          'py-4 px-8 mb-4 rounded-md flex flex-col gap-y-2 w-full md:w-3/6 mx-auto bg-neutral-800 text-neutral-300'
         }
       >
         <h1 className='font-black text-2xl text-center text-sky-500 mb-8'>
@@ -142,7 +154,7 @@ const ProfilePage = () => {
           }
           disabled={isPending}
         >
-          Submit
+          {isPending ? 'Processing' : 'Submit'}
         </button>
       </form>
     </div>

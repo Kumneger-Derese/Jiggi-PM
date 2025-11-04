@@ -20,6 +20,7 @@ const ProjectCard = ({
         {project.description}
       </h2>
 
+      {/* Action Button */}
       <div className='flex justify-between items-center'>
         <Link
           className='px-4 py-2 rounded-md hover:text-sky-400 w-fit bg-neutral-600 font-semibold'

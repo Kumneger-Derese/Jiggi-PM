@@ -1,8 +1,17 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: Poppins;
+  src: url(./asset/Poppins-Regular2.ttf);
+}
+
+@theme {
+  --font-poppins: 'Poppins';
+}
+
 body,
 html {
-  @apply bg-neutral-900  text-neutral-100;
+  @apply bg-neutral-900 scroll-smooth  text-neutral-100 m-0 p-0;
 }
 
 ::-webkit-scrollbar {
