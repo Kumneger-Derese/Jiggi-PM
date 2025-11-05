@@ -14,7 +14,7 @@ const InvitationPage = () => {
   }
 
   if (isLoading) {
-    return <Loading count={7} />
+    return <Loading  />
   }
 
   if (isError) {

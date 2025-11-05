@@ -7,11 +7,22 @@ const SendInviteModal = ({currentProjectId,setIsSendInviteModalOpen}) => {
 
     const sendInviteMutation = useSendInvite()
 
+
     const handleSendInvite = () => {
         sendInviteMutation.mutate({projectId: currentProjectId, body: {email}})
 
         setEmail('')
         setIsSendInviteModalOpen(false)
+    }
+
+    if(sendInviteMutation.isPending){
+        return (
+            <div
+                className={'min-h-screen flex items-center justify-center font-bold bg-neutral-800 text-neutral-200'}
+            >
+                Sending Email...
+            </div>
+        )
     }
 
     return (

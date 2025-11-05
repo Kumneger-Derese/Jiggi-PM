@@ -106,12 +106,53 @@ const sendInvitation = asyncHandler(async (req, res, next) => {
   const projectTitle = project?.name
   await sendInviteEmail({
     to: email,
-    subject: `Invited to join ${projectTitle || 'Project'}`,
-    html: `<div style="padding: 10px; border-radius: 4px; background: black; color: white;">
-                 Hello Dear new Member Join at
-                 <p style="margin-top: 4px; color: white">${acceptUrl}</p>
-                </div>`
+    subject: `You're invited to join ${projectTitle || 'a project'} on Jiggi`,
+    html: `
+  <div style="font-family: Arial, sans-serif; background: #f4f7fa; padding: 32px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; border-radius: 10px; padding: 40px; border: 1px solid #e2e8f0;">
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <h1 style="margin: 0; font-size: 24px; font-weight: 700; color: #0f172a;">
+          Jiggi
+        </h1>
+      </div>
+
+      <h2 style="margin: 0 0 14px; font-size: 20px; color: #0f172a;">
+        You've been invited!
+      </h2>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.65;">
+        Hello,
+        <br/><br/>
+        You’ve been invited to join the project <strong>${projectTitle || ''}</strong> on Jiggi.
+        Click the button below to accept your invitation and start collaborating.
+      </p>
+
+      <div style="margin: 28px 0; text-align: center;">
+        <a href="${acceptUrl}"
+          style="background: #0ea5e9; color: #ffffff; text-decoration: none; padding: 14px 22px; border-radius: 6px; font-size: 16px; font-weight: 600; display: inline-block;">
+          Accept Invitation
+        </a>
+      </div>
+
+      <p style="font-size: 14px; color: #475569;">
+        If the button doesn't work, paste this link into your browser:
+        <br/>
+        <a href="${acceptUrl}" style="color: #0ea5e9; text-decoration: none;">${acceptUrl}</a>
+      </p>
+
+      <hr style="margin: 32px 0; border: none; border-top: 1px solid #e2e8f0;" />
+
+      <p style="font-size: 13px; color: #94a3b8; text-align: center;">
+        If you didn't expect this email, you can safely ignore it.
+        <br/>— The Jiggi Team
+      </p>
+
+    </div>
+  </div>
+  `
   })
+
 
   res.status(201).json({ message: 'Invite sent', invite, projectId })
 })
