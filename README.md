@@ -4,7 +4,7 @@ Jiggi is a modern lightweight project management platform designed for teams and
 
 <br />
 
-![Image](../frontend/src/asset/Jiggi-Homepage.png 'Jiggi')
+![Image](/frontend/src/asset/Jiggi-Homepage.png 'Jiggi')
 
 <br/>
 
