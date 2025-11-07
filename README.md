@@ -45,9 +45,9 @@ Jiggi is a modern lightweight project management platform designed for teams and
 
 ## Link to resources
 
-Code: [Github](http://localhost:4100/)
+Code: [Github](https://github.com/Kumneger-Derese/Jiggi-PM))
 
-Preview: [http://localhost:4100/](http://localhost:4100/, 'This is title')
+Preview: <https://jiggi-frontend.onrender.com/>
 
 <br/>
 
@@ -69,4 +69,4 @@ MIT: Free to use and modify.
 
 Name: Kumneger Derese <br/>
 Email: kumnegerderese@gmail.com <br />
-GitHub:
+GitHub:https://github.com/Kumneger-Derese
